@@ -1,10 +1,10 @@
 const { userServices } = require('../../serrvice');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     try {
-        const usersLength = userServices.lengthUsersArr();
+        const users = await userServices.getUsers();
 
-        if (usersLength) {
+        if (!users.length) {
             throw new Error('Users exist');
         }
         next();

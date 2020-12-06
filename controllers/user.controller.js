@@ -1,47 +1,44 @@
 const { userServices } = require('../serrvice');
 
 module.exports = {
-    getAllUsers: (req, res) => {
+    getAllUsers: async (req, res) => {
         try {
-            const users = userServices.getUsers();
+            const users = await userServices.getUsers();
 
-            res.status(200).json(`Users found: ${users}`);
+            res.json(users);
         } catch (e) {
             res.status(400).json(e.message);
         }
     },
 
-    createUser: (req, res) => {
+    createUser: async (req, res) => {
         try {
             const user = req.body;
 
-            userServices.createdUser(user);
+            const newUser = await userServices.createUser(user);
 
-            res.status(201).json('User created');
+            res.status(201).json(newUser);
         } catch (e) {
             res.status(400).json(e.message);
         }
     },
 
-    getOneUsers: (req, res) => {
+    getOneUsers: async (req, res) => {
         try {
-            const { email } = req.params;
+            const { userId } = req.params;
 
-            if (email.length < 0) {
-                throw new Error('User email must > 0');
-            }
-            const user = userServices.getUserByEmail(email);
+            const user = await userServices.getUserById(userId);
 
             if (!user) {
                 throw new Error('User not created');
             }
-            res.status(200).json(`User found: ${user}`);
+            res.json(user);
         } catch (e) {
             res.status(400).json(e.message);
         }
     },
 
-    deleteUser: (req, res) => {
+    deleteUser: async (req, res) => {
         try {
             const { email } = req.params;
 
@@ -53,11 +50,24 @@ module.exports = {
             if (!user) {
                 throw new Error('User not created');
             }
-            res.json('User delete');
+            res.status(205).json('User delete');
         } catch (e) {
             res.status(400).json(e.message);
         }
 
         res.json('user delete');
-    }
+    },
+
+    updateUser: async (req, res) => {
+        try {
+            const updateUser = req.body;
+            const { id } = req.params;
+
+            const db = await userServices.updateUser(id, updateUser);
+
+            res.status(201).json(db);
+        } catch (e) {
+            res.status(400).json(e.message);
+        }
+    },
 };

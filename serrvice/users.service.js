@@ -1,23 +1,27 @@
-const base = require('../Base/users');
+const { UserModel, CarModel } = require('../base/models');
 
 module.exports = {
-    getUserByEmail: (email) => {
-        base.find((user) => user.email.toLowerCase() === email.toLowerCase());
+    getUserById: (id) => CarModel.findAll({
+        where: { users_id: id },
+        include: [{ model: UserModel, as: 'user' }]
+    }),
+
+    getUsers: () => UserModel.findAll(),
+
+    deletedUser: async (email) => {
+        await UserModel.destroy({
+            where: { email }
+        });
     },
 
-    getUsers: () => base,
-    createdUser: (user) => {
-        base.push(user);
-    },
+    createUser: (user) => UserModel.create(user),
 
-    deletedUser: (email) => {
-        const userIndex = base.findIndex((user) => user.email.toLowerCase() === email.toLowerCase());
+    updateUser: (id, obj) => UserModel.update(
+        { ...obj },
+        { where: { id } }
+    ),
 
-        base.splice(userIndex, 1);
-    },
-    lengthUsersArr: () => {
-        if (base.length < 1) {
-            return true;
-        }
-    }
+    getUserByEmail: (data) => UserModel.findOne({
+            where: { email: data }
+        }),
 };
